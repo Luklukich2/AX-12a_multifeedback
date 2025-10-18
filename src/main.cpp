@@ -10,7 +10,7 @@
 
 // HardwareSerial dxlSerial(0);    
 
-int servoID[5] = {1, 2, 8, 15, 5};
+int servoID[5] = {1, 2, 3, 15, 5};
 
 short Position;
 short Voltage;
