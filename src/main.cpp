@@ -10,18 +10,14 @@
 
 // HardwareSerial dxlSerial(0);    
 
-const uint8_t DXL_ID1 = 1;
-const uint8_t DXL_ID2 = 2;
-const uint8_t DXL_ID3 = 3;
-const uint8_t DXL_ID4 = 4;
-const uint8_t DXL_ID5 = 5;                                    
+int servoID[5] = {1, 2, 8, 15, 5};
 
 short Position;
 short Voltage;
 short Temperature;
 int servo_id = 1;
-int counter_max = 6;
-int counter_low = 0;
+int counter_max = 5;
+int counter_low = -1;
 
 uint8_t counter = 0;
 String motorModel;
@@ -53,9 +49,9 @@ void find_Model(int servo_id)
 }
 
 SCREEN(DX1, {
-         ROW("Position[]: %d", (find_Pos(counter) * 360) / 1023)
-         ROW("Voltage[]: %d", (find_Volt(counter)) / 10)
-         ROW("Temperature[]: %d", find_Temp(counter))
+         ROW("Position[]: %d", ((find_Pos(servoID[counter]) * 360) / 1023))
+         ROW("Voltage[]: %d", (find_Volt(servoID[counter])) / 10)
+         ROW("Temperature[]: %d", find_Temp(servoID[counter]))
          ROW("Model[]: %s", motorModel.c_str())
          CLICK_ROW([](CLICK_STATE state)
          {
@@ -72,7 +68,7 @@ SCREEN(DX1, {
             break;
         default:
             break;
-        } }, "Servo_id %3u", counter);
+        } }, "Servo_id: %3u", counter);
        });
 
 void setup() {
@@ -94,14 +90,14 @@ void loop() {
   ;
   timer = micros();
 
-  if (counter >= counter_max)
-  {
-    counter = 1;
-  }
-  if (counter <= counter_low)
-  {
-    counter = 1;
-  }
+  // if (counter >= counter_max)
+  // {
+  //   counter = 0;
+  // }
+  // if (counter >= counter_low)
+  // {
+  //   counter = 0;
+  // }
   // Position = Dynamixel.readPosition(DXL_ID1);
   // Voltage = Dynamixel.readVoltage(DXL_ID1);
   // Temperature = Dynamixel.readTemperature(DXL_ID1);
