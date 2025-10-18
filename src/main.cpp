@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <Dynamixel.h>
 #include <argviz.h>
+#include "Config.h"
 
 #define DXL_BAUDRATE    1000000
 #define DXL_SERIAL      dxlSerial
@@ -13,12 +14,14 @@ const uint8_t DXL_ID1 = 1;
 const uint8_t DXL_ID2 = 2;
 const uint8_t DXL_ID3 = 3;
 const uint8_t DXL_ID4 = 4;
-const uint8_t DXL_ID5 = 5;
+const uint8_t DXL_ID5 = 5;                                    
 
 short Position;
 short Voltage;
 short Temperature;
-int servo_id = 0;
+int servo_id = 1;
+int counter_max = 6;
+int counter_low = 0;
 
 uint8_t counter = 0;
 String motorModel;
@@ -50,8 +53,8 @@ void find_Model(int servo_id)
 }
 
 SCREEN(DX1, {
-         ROW("Position[]: %d", find_Pos(counter))
-         ROW("Voltage[]: %d", find_Volt(counter))
+         ROW("Position[]: %d", (find_Pos(counter) * 360) / 1023)
+         ROW("Voltage[]: %d", (find_Volt(counter)) / 10)
          ROW("Temperature[]: %d", find_Temp(counter))
          ROW("Model[]: %s", motorModel.c_str())
          CLICK_ROW([](CLICK_STATE state)
@@ -86,7 +89,19 @@ void setup() {
 }
 
 void loop() {
+  static uint32_t timer = micros();
+  while(micros() - timer < Ts_us)
+  ;
+  timer = micros();
 
+  if (counter >= counter_max)
+  {
+    counter = 1;
+  }
+  if (counter <= counter_low)
+  {
+    counter = 1;
+  }
   // Position = Dynamixel.readPosition(DXL_ID1);
   // Voltage = Dynamixel.readVoltage(DXL_ID1);
   // Temperature = Dynamixel.readTemperature(DXL_ID1);
