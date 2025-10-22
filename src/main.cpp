@@ -53,6 +53,14 @@ int find_Temp(int servo_id)
   return Temperature;
 }
 
+void servo_tick()
+{
+  for (int i = 0; i < 4; i++)
+  {
+    servoPos[i] = (((find_Pos(servoID[i]) * 360.0) / 1023));
+  }
+}
+
 void find_Model(int servo_id)
 {
   motorModel = Dynamixel.mapMotorModel((Dynamixel.readModel(servo_id)));
@@ -109,6 +117,8 @@ void loop()
     ;
   timer = micros();
 
+  servo_tick();
+  
   if (counter >= counter_max)
   {
     counter--;
@@ -128,14 +138,8 @@ void loop()
   }
   if (data_flag == true)
   {
-    // send_data = "MANIP:" +
-    //             String(servoPos[0]) + ";" +
-    //             String(servoPos[1]) + ";" +
-    //             String(servoPos[2]) + ";" +
-    //             String(servoPos[3]) + ";" +
-    //             String(servoPos[4]);
     char buf[50] = {};
-    sprintf(buf,
+      sprintf(buf,
       "MANIP:%03d;%03d;%03d;%03d;%03d",
       (int)servoPos[0],
       (int)servoPos[1],
@@ -143,12 +147,7 @@ void loop()
       (int)servoPos[3],
       (int)servoPos[4]);
     send_data = String(buf);
-
     radio.send(send_data, "SCADA", 100);
-  }
-
-  for (int i = 0; i < 4; i++)
-  {
-    servoPos[i] = (((find_Pos(servoID[i]) * 360.0) / 1023));
+    servo_tick();
   }
 }
